@@ -1,5 +1,5 @@
-set yrange[0:1]
-set xrange[0:500]
+# Gnuplot script
+# Johan Book
 
 # Which group to plot. 
 # 1 = susc
@@ -9,6 +9,8 @@ set xrange[0:500]
 # 5 = recovred
 group = 5;
 
+set yrange[0:1]
+set xrange[0:500]
 
 # Labels
 set ylabel "Fraction of total population"

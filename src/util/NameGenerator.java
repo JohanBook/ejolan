@@ -1,3 +1,11 @@
+////////////////////////////////////////////////
+// NameGenerator.java
+// A simplistic class generating city names. 
+// Usage: create an instance of the class and call getName()
+// Johan Book
+// 2015-09-12
+////////////////////////////////////////////////
+
 package util;
 
 import java.util.Random;

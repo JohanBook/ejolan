@@ -1,19 +1,14 @@
+# Script to plot data in gnuplot
+# Johan Book
+
 set dgrid3d 50,50
 set hidden3d
 
-
-
 set zrange[0:1]
 
-
 set xlabel "a" # name of x axis ie. alpha or death rate
-
 set ylabel "b" # name of y axis ie. beta or incubation
-
 set zlabel "Total deaths"
 
-
-
 # change data.dat to name of data file
-
 splot "data.dat" u 1:2:3 w l lt -1 notitle 

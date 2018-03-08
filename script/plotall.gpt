@@ -1,0 +1,19 @@
+set yrange[0:1]
+set xrange[0:500]
+
+# Which group to plot. 
+# 1 = susc
+# 2 = incubation
+# 3 = symptoms
+# 4 = dead
+# 5 = recovred
+group = 5;
+
+
+# Labels
+set ylabel "Fraction of total population"
+set xlabel "Number of days since outbreak"
+
+#Plot susceptibles
+group = group+1;
+plot for [i=0:34] "city".i.".dat" u 1:group w l notitle lt -1

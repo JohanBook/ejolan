@@ -33,7 +33,7 @@ public class Settings
 	public double t = 0; // current time
 	public int number_of_groups = 5; // the number of groups (t.ex. infect)
 	public int time_interval = 100; // the time interval used in the timer
-	public int seed = 24; // seed for the random generator
+	public static final int seed = 24; // seed for the random generator
 
 	// The solver to use i.e. Euler or RungeKutta4
 	public final Solver solver = new RungeKutta4();

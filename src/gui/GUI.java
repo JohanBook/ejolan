@@ -33,39 +33,50 @@ import src.Road;
 import util.Util;
 
 @SuppressWarnings("serial")
-public class DrawCities extends JFrame
+public class GUI extends JFrame
 {
+	private Settings settings;
 	private BufferedImage image;
 
 	// TextArea for displaying city information
-	private final JTextArea label = new JTextArea();
+	private final JTextArea labelCity = new JTextArea(); // display info on
+																			// chosen city
+	private final JTextArea labelNetwork = new JTextArea(); // display info on
+																				// whole network
+
+	// The city for which to display information
+	private City selectedCity;
 
 	// Constructor
-	public DrawCities(final Settings settings)
+	public GUI(final Settings settings)
 	{
-
+		this.settings = settings;
+		
 		// Menu
 		final JPanel menu = new JPanel();
-		final JButton btnStart = new JButton("Start");
-		final JButton btnSave = new JButton("Save");
 
+		// Button for start/pause simulation
+		final JButton btnStart = new JButton("Start Simulation");
 		btnStart.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if (btnStart.getText().equals("Start"))
+				if (btnStart.getText().equals("Start Simulation"))
 				{
-					btnStart.setText("Pause");
+					btnStart.setText("Pause Simulation");
 					Main.start();
 				} else
 				{
-					btnStart.setText("Start");
+					btnStart.setText("Start Simulation");
 					Main.pause();
 				}
 			}
 		});
+		menu.add(btnStart);
 
+		// Button for saving an image of the GUI
+		final JButton btnSave = new JButton("Save Image");
 		btnSave.addActionListener(new ActionListener()
 		{
 			@Override
@@ -74,21 +85,25 @@ public class DrawCities extends JFrame
 				saveImage("image" + settings.t);
 			}
 		});
-
-		menu.add(btnStart);
 		menu.add(btnSave);
 
-		// Info menu
-		final JPanel info = new JPanel();
-		info.add(label);
+		// Network info panel
+		final JPanel panelNetwork = new JPanel();
+		panelNetwork.add(labelNetwork);
 
+		// City info panel
+		final JPanel panelLabel = new JPanel();
+		panelLabel.add(labelCity);
+
+		// Panel where all graphics will go
 		Panel panel = new Panel(settings);
 		panel.setForeground(Color.white);
 		panel.setPreferredSize(new Dimension(1000, 750));
 
 		add(panel, BorderLayout.CENTER);
 		add(menu, BorderLayout.SOUTH);
-		add(info, BorderLayout.EAST);
+		add(panelNetwork, BorderLayout.WEST);
+		add(panelLabel, BorderLayout.EAST);
 
 		addMouseListener(new MouseListener()
 		{
@@ -98,60 +113,77 @@ public class DrawCities extends JFrame
 			{
 				int x = e.getX();
 				int y = e.getY();
-				City city = mindist(settings.network.getCities(), x, y);
-				double[] sir = city.get();
-				String txt = city.toString();
-
-				double current_population = city.getCurrentPopulation();
-
-				txt += "\nInitial population:\t" + (int) city.getTotalPopulation();
-				txt += "\nCurrent population:\t" + (int) current_population;
-
-				// Avoid dividing by zero
-				if (current_population <= 0)
-					current_population = 1;
-
-				txt += "\nIncubation:\t\t"
-						+ (int) (100 * (sir[1]) / current_population) + " %";
-				txt += "\nSick:\t\t" + (int) (100 * (sir[2]) / current_population)
-						+ " %";
-				txt += "\nImmune:\t\t" + (int) (100 * sir[4] / current_population)
-						+ " %";
-				txt += "\nDead:\t\t" + (int) (sir[3]);
-				txt += "\nQuarantine:\t\t" + city.isInQuarantine();
-				label.setText(txt);
+				selectedCity = mindist(settings.network.getCities(), x, y);
+				updateLabels();
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e)
 			{
-
+				// intentionally left empty
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e)
 			{
-
+				// intentionally left empty
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e)
 			{
-
+				// intentionally left empty
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e)
 			{
-
+				// intentionally left empty
 			}
 		});
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("The EJOLAN project");
+		setTitle("The ejolan project");
 		pack();
 		setVisible(true);
 		requestFocus();
+	}
+
+	// Update the labels with city and network information
+	private void updateLabels()
+	{
+		String text;
+		
+		// ==== Network information ====
+		text = "hey";
+		labelNetwork.setText(text);
+
+		// ==== City information ====
+		if (selectedCity == null)
+			return;
+
+		double[] sir = selectedCity.get();
+		text = selectedCity.toString();
+
+		double current_population = selectedCity.getCurrentPopulation();
+
+		text += "\nInitial population:\t"
+				+ (int) selectedCity.getTotalPopulation();
+		text += "\nCurrent population:\t" + (int) current_population;
+
+		// Avoid dividing by zero
+		if (current_population <= 0)
+			current_population = 1;
+
+		text += "\n\nHealthy:\t\t" + (int) (100 * (sir[0]) / current_population)
+				+ " %";
+		text += "\nIncubation:\t\t" + (int) (100 * (sir[1]) / current_population)
+				+ " %";
+		text += "\nSick:\t\t" + (int) (100 * (sir[2]) / current_population) + " %";
+		text += "\nImmune:\t\t" + (int) (100 * sir[4] / current_population) + " %";
+		text += "\nDead:\t\t" + (int) (100 * sir[3] / current_population) + " %";
+		text += "\nQuarantine:\t\t" + selectedCity.isInQuarantine();
+		labelCity.setText(text);
 	}
 
 	// ================ Panel ================
@@ -170,6 +202,7 @@ public class DrawCities extends JFrame
 			super.paintComponent(gr);
 			image = drawToImage(settings, this.getWidth(), this.getHeight());
 			gr.drawImage(image, 0, 0, null);
+			updateLabels();
 		}
 
 	}
@@ -233,6 +266,7 @@ public class DrawCities extends JFrame
 		return image;
 	}
 
+	// Save image of GUI to file
 	private void saveImage(String string)
 	{
 		try

@@ -9,7 +9,6 @@
 package src;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import settings.Settings;
 import solver.Differentiable;
@@ -17,6 +16,7 @@ import solver.Euler;
 import solver.ExtendedSIR;
 import solver.SimpleSIR;
 import solver.Solver;
+import util.Random;
 import util.Util;
 
 // A class holding several cities
@@ -38,7 +38,6 @@ public class Network
 	public Network(Settings settings)
 	{
 		this.settings = settings;
-		Random random = new Random(settings.seed);
 
 		// Initialize variables
 		cities2 = new double[getIndex(settings.tmax)][settings.number_of_groups
@@ -57,8 +56,8 @@ public class Network
 
 			// Generate population
 			int population = settings.min_population
-					+ (int) (settings.max_population * supergauss(random));
-			int I = getInfected(population, i);
+					+ (int) (settings.max_population * Random.supergauss());
+			int I = getInitiallyInfected(population, i);
 			int R = (int) ((population - I) * settings.natural_resistance);
 			int S = population - I - R;
 
@@ -66,8 +65,8 @@ public class Network
 			int x, y;
 			do
 			{
-				x = random.nextInt(600) + 100;
-				y = random.nextInt(600) + 100;
+				x = Random.nextInt(600) + 100;
+				y = Random.nextInt(600) + 100;
 			} while (Util.mindist(cities, x, y) < min_city_distance);
 
 			cities[i] = new City(x, y, i, settings, this);
@@ -202,7 +201,9 @@ public class Network
 
 		return total;
 	}
+	
 
+	// Close all streams associated to all cities
 	public void close()
 	{
 		for (City city : cities)
@@ -229,7 +230,7 @@ public class Network
 	}
 
 	// How the disease starts
-	private int getInfected(int population, int i)
+	private int getInitiallyInfected(int population, int i)
 	{
 		double percentage = 1. / 13;
 		if (i == 30) // start in city 30
@@ -243,13 +244,6 @@ public class Network
 		if (t > settings.tmax)
 			return getIndex(settings.tmax);
 		return (int) Math.ceil(t / settings.dt);
-	}
-
-	// SUPER GAUSS YA! remove this
-	private double supergauss(Random random)
-	{
-		return Math.abs(random.nextGaussian() * random.nextGaussian()
-				* random.nextGaussian() * random.nextGaussian());
 	}
 
 	// Determines a "score" between to cities

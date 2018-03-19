@@ -6,7 +6,7 @@
 
 package src;
 
-import gui.DrawCities;
+import gui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -91,7 +91,7 @@ public class Main
 		settings.t = 0;
 		settings.writeEachCity = true;
 		settings.network = new Network(settings);
-		final DrawCities draw = new DrawCities(settings);
+		final GUI draw = new GUI(settings);
 
 		// Create update timer
 		update = new Timer(settings.time_interval, new ActionListener()
@@ -171,9 +171,9 @@ public class Main
 
 				// Take simulation step
 				settings.network.simulate(settings.t);
-				if (settings.writeEachCity)
-					System.out.print("Day " + settings.t + "\tTotal population: "
-							+ (int) settings.network.getCurrentPopulation() + "\n");
+				//if (settings.writeEachCity)
+				//	System.out.print("Day " + settings.t + "\tTotal population: "
+				//			+ (int) settings.network.getCurrentPopulation() + "\n");
 
 				settings.t += settings.dt;
 
@@ -213,7 +213,7 @@ public class Main
 			}
 
 		printer.close();
-		System.out.println("Complete!");
+		System.out.println("Simulation complete");
 
 	}
 

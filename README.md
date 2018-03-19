@@ -5,6 +5,14 @@
 <p align="justify">
 Ejolan is a project done in order to simulate the spread of diseases using an extension of the SIR-model. Five different states are considered; susceptible, infected, and recovered/immune. This was applied to a proceduraly generated network of cities and connecting roads.
 </p>
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/JohanBook/ejolan/master/city_map.png" width="400">
+</p>
+<p align="center">
+  <b>Figure 1</b>: The proceduraly generated city network used in this example.
+</p>
+
 <p align="justify">
 The work studies mainly the four parameters transmission rate, recovery rate, mortality rate and incubation time. There is some code to investigate how quarantines can be utilized to minimalize the total number of deaths but is not yet been completely implemented. The main results are presented in figure 1. 
 </p>

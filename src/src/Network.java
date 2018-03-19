@@ -1,3 +1,11 @@
+////////////////////////////////////////////////
+// Network.java
+// A class containing several cities. This class 
+// contains methods to simulate the network.
+// Johan Book
+// 2015-09-12
+////////////////////////////////////////////////
+
 package src;
 
 import java.util.ArrayList;
@@ -13,10 +21,12 @@ import util.Util;
 
 // A class holding several cities
 @SuppressWarnings("unused")
-public class Network {
+public class Network
+{
 
 	// convention [time][group + number of groups * city]
 	public double[][] cities2;
+	
 	public City[] cities;
 	private ArrayList<Road> allroads;
 	private Settings settings;
@@ -25,15 +35,15 @@ public class Network {
 	private double[] travel;
 
 	// Setup grid of cities
-	public Network(Settings settings) {
+	public Network(Settings settings)
+	{
 		this.settings = settings;
-		Random random = new Random(settings.seed); // seed 0
+		Random random = new Random(settings.seed);
 
 		// Initialize variables
 		cities2 = new double[getIndex(settings.tmax)][settings.number_of_groups
 				* settings.number_of_cities];
-		travel = new double[settings.number_of_cities
-				* settings.number_of_cities];
+		travel = new double[settings.number_of_cities * settings.number_of_cities];
 		cities = new City[settings.number_of_cities];
 		allroads = new ArrayList<Road>(settings.number_of_cities
 				* settings.number_of_cities);
@@ -42,7 +52,8 @@ public class Network {
 				.getHeight() * settings.panel_size.getWidth()) / settings.number_of_cities);
 
 		// Generate cities
-		for (int i = 0; i < settings.number_of_cities; i++) {
+		for (int i = 0; i < settings.number_of_cities; i++)
+		{
 
 			// Generate population
 			int population = settings.min_population
@@ -51,9 +62,10 @@ public class Network {
 			int R = (int) ((population - I) * settings.natural_resistance);
 			int S = population - I - R;
 
-			// Generate location
+			// Generate locations until an allowed one is found
 			int x, y;
-			do {
+			do
+			{
 				x = random.nextInt(600) + 100;
 				y = random.nextInt(600) + 100;
 			} while (Util.mindist(cities, x, y) < min_city_distance);
@@ -67,19 +79,23 @@ public class Network {
 		}
 
 		// Create links between cities
-		for (int i = 0; i < settings.number_of_cities; i++) {
+		for (int i = 0; i < settings.number_of_cities; i++)
+		{
 			ArrayList<Road> potential_roads = new ArrayList<Road>();
-			for (int j = i + 1; j < settings.number_of_cities; j++) {
+			for (int j = i + 1; j < settings.number_of_cities; j++)
+			{
 				Road road = new Road(cities[i], cities[j], this);
 				double travel = getScore(cities[i], cities[j]);
-				if (travel > 0.1) {
+				if (travel > 0.1)
+				{
 					road.connect();
 					allroads.add(road);
 				} else if (!cities[i].isConnected())
 					potential_roads.add(road);
 			}
 			// Find optimal road if none is connected
-			if (!cities[i].isConnected() && !potential_roads.isEmpty()) {
+			if (!cities[i].isConnected() && !potential_roads.isEmpty())
+			{
 				Road optimal = potential_roads.get(0);
 				for (Road road : potential_roads)
 					if (road.getTravelRate() > optimal.getTravelRate())
@@ -90,14 +106,17 @@ public class Network {
 		}
 	}
 
-	public void simulate() {
+	// Simulate the network
+	public void simulate()
+	{
 		settings.t = 0;
 		for (; settings.t < settings.tmax; settings.t += settings.dt)
 			simulate(settings.t);
 	}
 
 	// Simulate a network of cities at the time t
-	public void simulate(double t) {
+	public void simulate(double t)
+	{
 		updateTravelRate();
 
 		// Calculate population at next time step
@@ -105,10 +124,12 @@ public class Network {
 				cities2[getIndex(t)], travel, t, settings.dt, settings);
 
 		// Calculates how many is sick/ incubation/... in every city
-		for (int i = 0; i < settings.number_of_cities; i++) {
+		for (int i = 0; i < settings.number_of_cities; i++)
+		{
 
 			if (t + settings.dt < settings.tmax)
-				for (int j = 0; j < a.length; j++) {
+				for (int j = 0; j < a.length; j++)
+				{
 
 					// To avoid negative populations
 					if (a[j] < 0)
@@ -135,12 +156,14 @@ public class Network {
 	}
 
 	// Returns cities
-	public City[] getCities() {
+	public City[] getCities()
+	{
 		return cities;
 	}
 
 	// Returns sir-data from city i at t
-	public double[] get(int i, double t) {
+	public double[] get(int i, double t)
+	{
 		if (t >= settings.tmax)
 			t = settings.tmax - settings.dt;
 		double[] a = new double[settings.number_of_groups];
@@ -149,18 +172,21 @@ public class Network {
 		return a;
 	}
 
-	public double[] get(double t) {
+	public double[] get(double t)
+	{
 		if (t >= settings.tmax)
 			t = settings.tmax - settings.dt;
 		return cities2[getIndex(t)];
 	}
 
-	public ArrayList<Road> getRoads() {
+	public ArrayList<Road> getRoads()
+	{
 		return allroads;
 	}
 
 	// Sums initial population in all cites
-	public double getInitalPopulation() {
+	public double getInitalPopulation()
+	{
 		double sum = 0;
 		for (City city : cities)
 			sum += city.getTotalPopulation();
@@ -168,7 +194,8 @@ public class Network {
 	}
 
 	// Sums current population in all cites
-	public double getCurrentPopulation() {
+	public double getCurrentPopulation()
+	{
 		double total = 0;
 		for (int i = 0; i < settings.number_of_cities; i++)
 			total += cities[i].getCurrentPopulation();
@@ -176,20 +203,24 @@ public class Network {
 		return total;
 	}
 
-	public void close() {
+	public void close()
+	{
 		for (City city : cities)
 			city.close();
 	}
 
 	// Set travel between city i and j to rate
-	private void setTravel(int i, int j, double rate) {
+	private void setTravel(int i, int j, double rate)
+	{
 		travel[i + settings.number_of_cities * j] = rate;
 		travel[j + settings.number_of_cities * i] = rate;
 	}
 
 	// Calculate new travel rates
-	private void updateTravelRate() {
-		for (Road road : allroads) {
+	private void updateTravelRate()
+	{
+		for (Road road : allroads)
+		{
 			if (!road.isOpen())
 				continue;
 			int[] index = road.getCityNumbers();
@@ -198,7 +229,8 @@ public class Network {
 	}
 
 	// How the disease starts
-	private int getInfected(int population, int i) {
+	private int getInfected(int population, int i)
+	{
 		double percentage = 1. / 13;
 		if (i == 30) // start in city 30
 			return (int) (percentage * population);
@@ -206,21 +238,24 @@ public class Network {
 	}
 
 	// Transforms t into an index
-	private int getIndex(double t) {
+	private int getIndex(double t)
+	{
 		if (t > settings.tmax)
 			return getIndex(settings.tmax);
 		return (int) Math.ceil(t / settings.dt);
 	}
 
 	// SUPER GAUSS YA! remove this
-	private double supergauss(Random random) {
+	private double supergauss(Random random)
+	{
 		return Math.abs(random.nextGaussian() * random.nextGaussian()
 				* random.nextGaussian() * random.nextGaussian());
 	}
 
 	// Determines a "score" between to cities
 	// Roads with high score are drawn
-	private static double getScore(City a, City b) {
+	private static double getScore(City a, City b)
+	{
 		return (a.getTotalPopulation() + b.getTotalPopulation())
 				/ (5 * Util.distance(a, b) * 1000);
 	}

@@ -3,6 +3,8 @@
 // A class for GUI. Do not edit anything in here.
 // Johan Book
 // 2015-09-12
+//
+// Requires a settings object to be  instantiated.
 ////////////////////////////////////////////////////////////////
 
 package gui;
@@ -31,36 +33,44 @@ import src.Road;
 import util.Util;
 
 @SuppressWarnings("serial")
-public class DrawCities extends JFrame {
+public class DrawCities extends JFrame
+{
 	private BufferedImage image;
 
 	// TextArea for displaying city information
 	private final JTextArea label = new JTextArea();
 
 	// Constructor
-	public DrawCities(final Settings settings) {
+	public DrawCities(final Settings settings)
+	{
 
 		// Menu
 		final JPanel menu = new JPanel();
 		final JButton btnStart = new JButton("Start");
 		final JButton btnSave = new JButton("Save");
 
-		btnStart.addActionListener(new ActionListener() {
+		btnStart.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (btnStart.getText().equals("Start")) {
+			public void actionPerformed(ActionEvent e)
+			{
+				if (btnStart.getText().equals("Start"))
+				{
 					btnStart.setText("Pause");
 					Main.start();
-				} else {
+				} else
+				{
 					btnStart.setText("Start");
 					Main.pause();
 				}
 			}
 		});
 
-		btnSave.addActionListener(new ActionListener() {
+		btnSave.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				saveImage("image" + settings.t);
 			}
 		});
@@ -80,10 +90,12 @@ public class DrawCities extends JFrame {
 		add(menu, BorderLayout.SOUTH);
 		add(info, BorderLayout.EAST);
 
-		addMouseListener(new MouseListener() {
+		addMouseListener(new MouseListener()
+		{
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)
+			{
 				int x = e.getX();
 				int y = e.getY();
 				City city = mindist(settings.network.getCities(), x, y);
@@ -92,8 +104,7 @@ public class DrawCities extends JFrame {
 
 				double current_population = city.getCurrentPopulation();
 
-				txt += "\nInitial population:\t"
-						+ (int) city.getTotalPopulation();
+				txt += "\nInitial population:\t" + (int) city.getTotalPopulation();
 				txt += "\nCurrent population:\t" + (int) current_population;
 
 				// Avoid dividing by zero
@@ -102,32 +113,36 @@ public class DrawCities extends JFrame {
 
 				txt += "\nIncubation:\t\t"
 						+ (int) (100 * (sir[1]) / current_population) + " %";
-				txt += "\nSick:\t\t"
-						+ (int) (100 * (sir[2]) / current_population) + " %";
-				txt += "\nImmune:\t\t"
-						+ (int) (100 * sir[4] / current_population) + " %";
+				txt += "\nSick:\t\t" + (int) (100 * (sir[2]) / current_population)
+						+ " %";
+				txt += "\nImmune:\t\t" + (int) (100 * sir[4] / current_population)
+						+ " %";
 				txt += "\nDead:\t\t" + (int) (sir[3]);
-				txt += "\nQuarantine:\t\t" + city.isUnderQuarantine();
+				txt += "\nQuarantine:\t\t" + city.isInQuarantine();
 				label.setText(txt);
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e)
+			{
 
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void mouseReleased(MouseEvent e)
+			{
 
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
+			public void mouseEntered(MouseEvent e)
+			{
 
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
+			public void mouseExited(MouseEvent e)
+			{
 
 			}
 		});
@@ -140,15 +155,18 @@ public class DrawCities extends JFrame {
 	}
 
 	// ================ Panel ================
-	private class Panel extends JPanel {
+	private class Panel extends JPanel
+	{
 		private final Settings settings;
 
-		Panel(final Settings settings) {
+		Panel(final Settings settings)
+		{
 			this.settings = settings;
 		}
 
 		@Override
-		protected void paintComponent(Graphics gr) {
+		protected void paintComponent(Graphics gr)
+		{
 			super.paintComponent(gr);
 			image = drawToImage(settings, this.getWidth(), this.getHeight());
 			gr.drawImage(image, 0, 0, null);
@@ -157,17 +175,18 @@ public class DrawCities extends JFrame {
 	}
 
 	// Method for drawing graphics and storing it in an image
-	private BufferedImage drawToImage(Settings settings, int X, int Y) {
+	private BufferedImage drawToImage(Settings settings, int X, int Y)
+	{
 		Color closedRoad = new Color(255, 220, 220);
 		Color openRoad = new Color(100, 255, 100);
 		Color cityName = new Color(150, 150, 150);
 
-		BufferedImage image = new BufferedImage(X, Y,
-				BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(X, Y, BufferedImage.TYPE_INT_ARGB);
 		Graphics gr = image.createGraphics();
 
 		// Roads
-		for (Road road : settings.network.getRoads()) {
+		for (Road road : settings.network.getRoads())
+		{
 			int[] x = road.getPosition();
 			if (road.isOpen())
 				gr.setColor(openRoad);
@@ -177,7 +196,8 @@ public class DrawCities extends JFrame {
 		}
 
 		// Cities
-		for (City city : settings.network.getCities()) {
+		for (City city : settings.network.getCities())
+		{
 			int x[] = city.getPosition();
 			double[] s = city.get();
 
@@ -202,7 +222,8 @@ public class DrawCities extends JFrame {
 					/ 3);
 
 			// Draw quarantine
-			if (city.isUnderQuarantine()) {
+			if (city.isInQuarantine())
+			{
 				gr.setColor(Color.black);
 				gr.drawOval(x[0] - size, x[1] - size, 2 * size, 2 * size);
 			}
@@ -212,26 +233,31 @@ public class DrawCities extends JFrame {
 		return image;
 	}
 
-	private void saveImage(String string) {
-		try {
+	private void saveImage(String string)
+	{
+		try
+		{
 			// retrieve image
 			File outputfile = new File("data/" + string + ".png");
 			ImageIO.write(image, "png", outputfile);
 			System.out.println("Network image saved");
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			System.out.println("ERROR: Unable to save image to file");
 		}
 
 	}
 
 	// A special method used only here
-	private static City mindist(City[] cities, int x, int y) {
+	private static City mindist(City[] cities, int x, int y)
+	{
 		if (cities[0] == null)
 			return null;
 		double min = Util.distance(cities[0], x, y);
 		City ret = cities[0];
 		for (City city : cities)
-			if (city != null && Util.distance(city, x, y) < min) {
+			if (city != null && Util.distance(city, x, y) < min)
+			{
 				min = Util.distance(city, x, y);
 				ret = city;
 			}
@@ -239,7 +265,8 @@ public class DrawCities extends JFrame {
 	}
 
 	// Forces x into the range [0,255]
-	private static int force(int x) {
+	private static int force(int x)
+	{
 		if (x < 0)
 			return 0;
 		if (x > 255)

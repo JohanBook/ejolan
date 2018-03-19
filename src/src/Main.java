@@ -1,3 +1,9 @@
+////////////////////////////////////////////////
+// Main.java
+// The main class.
+// 2015-09-12
+////////////////////////////////////////////////
+
 package src;
 
 import gui.DrawCities;
@@ -10,26 +16,30 @@ import javax.swing.Timer;
 import settings.Settings;
 import util.Printer;
 
-public class Main {
+public class Main
+{
 	private static Timer update;
 
 	// Start graphical simulation
-	public static void start() {
+	public static void start()
+	{
 		update.start();
 	}
 
 	// Pause graphical simulation
-	public static void pause() {
+	public static void pause()
+	{
 		update.stop();
 	}
 
 	// Main method to run the program
 	// Arguments: [mode] [number of cities] [tmax] [dt] [updatetime]
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		Settings settings = new Settings();
-		
+
 		args = new String[1];
-		args[0]="gui";
+		args[0] = "gui";
 
 		// updatetime
 		if (args.length >= 5)
@@ -60,7 +70,8 @@ public class Main {
 	// Input :
 	// - Settings about simulation
 	// - String containing name on output file
-	private static void simulation(final Settings settings, final String string) {
+	private static void simulation(final Settings settings, final String string)
+	{
 		System.out.println("Data points: "
 				+ (int) (settings.number_of_cities * settings.number_of_groups
 						* settings.tmax / settings.dt));
@@ -83,24 +94,30 @@ public class Main {
 		final DrawCities draw = new DrawCities(settings);
 
 		// Create update timer
-		update = new Timer(settings.time_interval, new ActionListener() {
+		update = new Timer(settings.time_interval, new ActionListener()
+		{
 
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent actionEvent)
+			{
 
 				// Check if simulation is complete
-				if (settings.t > settings.tmax - settings.dt) {
+				if (settings.t > settings.tmax - settings.dt)
+				{
 					settings.network.close();
 
 					// Write data to file
 					Printer printer = new Printer(string, null);
 					Printer printer2 = new Printer(string + "_total", null);
-					printer.write("#City\tSusc\tIncu\tSick\tDead\tImmn\tErr_Susc\tErr_Incu\tErr_Sick\tErr_Dead\tErr_Immn");
-					printer2.write("#City\tSusc\tIncu\tSick\tDead\tImmn\tErr_Susc\tErr_Incu\tErr_Sick\tErr_Dead\tErr_Immn");
+					printer
+							.write("#City\tSusc\tIncu\tSick\tDead\tImmn\tErr_Susc\tErr_Incu\tErr_Sick\tErr_Dead\tErr_Immn");
+					printer2
+							.write("#City\tSusc\tIncu\tSick\tDead\tImmn\tErr_Susc\tErr_Incu\tErr_Sick\tErr_Dead\tErr_Immn");
 
 					double[] sum1 = new double[settings.number_of_groups];
 					double[] sum2 = new double[settings.number_of_groups];
 
-					for (int i = 0; i < settings.number_of_cities; i++) {
+					for (int i = 0; i < settings.number_of_cities; i++)
+					{
 
 						// Get data for city i and add into string
 						double[] a = settings.network.get(i, settings.tmax);
@@ -114,11 +131,10 @@ public class Main {
 								string += "\t" + x;
 
 						// Calculate error and add into string
-						for (int j = 0; j < a.length; j++) {
-							double d = Math
-									.abs(a[j]
-											- result[j + i
-													* settings.number_of_groups]) / 15;
+						for (int j = 0; j < a.length; j++)
+						{
+							double d = Math.abs(a[j]
+									- result[j + i * settings.number_of_groups]) / 15;
 							if (settings.writeFractionOfPopulation)
 								string += "\t" + (d / denom);
 							else
@@ -140,8 +156,7 @@ public class Main {
 						out += (x / denom) + "\t";
 					for (int k = 0; k < sum2.length; k++)
 						if (settings.writeFractionOfPopulation)
-							out += Math.abs(sum1[k] - sum2[k]) / (15 * denom)
-									+ "\t";
+							out += Math.abs(sum1[k] - sum2[k]) / (15 * denom) + "\t";
 						else
 							out += Math.abs(sum1[k] - sum2[k]) / (15) + "\t";
 					printer2.write(out);
@@ -157,10 +172,8 @@ public class Main {
 				// Take simulation step
 				settings.network.simulate(settings.t);
 				if (settings.writeEachCity)
-					System.out.print("Day " + settings.t
-							+ "\tTotal population: "
-							+ (int) settings.network.getCurrentPopulation()
-							+ "\n");
+					System.out.print("Day " + settings.t + "\tTotal population: "
+							+ (int) settings.network.getCurrentPopulation() + "\n");
 
 				settings.t += settings.dt;
 
@@ -171,7 +184,8 @@ public class Main {
 	}
 
 	// Calculate the total percentage of deaths given some settings
-	private static double calculate_deaths(final Settings settings) {
+	private static double calculate_deaths(final Settings settings)
+	{
 		settings.network = new Network(settings);
 		settings.network.simulate();
 
@@ -184,12 +198,14 @@ public class Main {
 	}
 
 	// Loop generating data for different alpha and beta
-	private static void simulation1(Settings settings) {
+	private static void simulation1(Settings settings)
+	{
 		System.out.println("Calculating landscape data for alpha and beta");
 		Printer printer = new Printer("simulation_alpha_beta", null);
 		settings.writeEachCity = false;
 		for (double a = 0.01; a < 1; a += 0.01)
-			for (double b = 0.01; b < 1; b += 0.01) {
+			for (double b = 0.01; b < 1; b += 0.01)
+			{
 				settings.alpha = a;
 				settings.beta1 = b;
 				printer.write(settings.alpha + "\t" + settings.beta1 + "\t"
@@ -202,13 +218,15 @@ public class Main {
 	}
 
 	// Loop generating data for different incubation and death-rate
-	private static void simulation2(Settings settings) {
+	private static void simulation2(Settings settings)
+	{
 		System.out
 				.println("Calculating landscape data for incubation and deathrate");
 		Printer printer = new Printer("simulation_inc_dr", null);
 		settings.writeEachCity = false;
 		for (double inc = 1; inc < 10; inc += 0.1)
-			for (double dr = 0.1; dr < 1; dr += 0.01) {
+			for (double dr = 0.1; dr < 1; dr += 0.01)
+			{
 				settings.incubation = inc;
 				settings.deathrate = dr;
 				printer.write(settings.deathrate + "\t" + settings.incubation

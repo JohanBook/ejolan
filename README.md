@@ -3,7 +3,7 @@
 <h3 align="center">Johan Book and Ola Olsson</h3>
 
 <p align="justify">
-Ejolan is a project done in order to simulate the spread of diseases using the SIR-model. It studies mainly the four parameters: transmission rate, recovery rate, mortality rate and incubation time. There is some code to investigate how quarantines can utilized to minimalize the total number of deaths but is not yet been completely implemented. The main results are presented in figure 1. 
+Ejolan is a project done in order to simulate the spread of diseases using the SIR-model. It studies mainly the four parameters transmission rate, recovery rate, mortality rate and incubation time. There is some code to investigate how quarantines can be utilized to minimalize the total number of deaths but is not yet been completely implemented. The main results are presented in figure 1. 
 </p>
 
 <table style="width:100%">
